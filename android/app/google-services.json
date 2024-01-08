@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "253112803524",
+    "project_id": "mynotes-boobala",
+    "storage_bucket": "mynotes-boobala.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:253112803524:android:8abc416eefeb038110e991",
+        "android_client_info": {
+          "package_name": "ru.irsdirect.mynotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA89GEflP1YxHYnQUTniVct-AsQubOcbDU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
