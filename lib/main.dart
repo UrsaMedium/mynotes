@@ -2,6 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/notes_view.dart';
+import 'package:mynotes/views/register_view.dart';
+import 'package:mynotes/views/verify_email_view.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +18,10 @@ void main() {
         useMaterial3: true,
       ),
       home: const HomePage(),
+      routes: {
+        '/login/': (context) => const LoginView(),
+        '/register/': (context) => const RegisterView(),
+      },
     ));
 }
 
@@ -21,41 +30,34 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: FutureBuilder(
+    return FutureBuilder(
         future: Firebase.initializeApp(
                   options: DefaultFirebaseOptions.currentPlatform,
                 ),
         builder: (context, snapshot) {
           switch (snapshot.connectionState){
 
-            case ConnectionState.none:
-              // TODO: Handle this case.
-              break;
-            case ConnectionState.waiting:
-              // TODO: Handle this case.
-              break;
-            case ConnectionState.active:
-              // TODO: Handle this case.
-              break;
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
-              if (user?.emailVerified ?? false) {
-                print('U r verified');
+              print(user);
+              if (user != null) {
+                if (user.emailVerified != false) {
+                  print('U r verified');
+                  return const NotesView();
+                } else {
+                  print('Verify ur ass');
+                  return const VerifyEmailView();
+                }
               } else {
-                print('Verify ur ass');
+                print('Register ur ass');
+                return LoginView();
               }
-              return Text('Done');
+              // return const LoginView();
             default:
-              return const Text('Loading...');
+              return const CircularProgressIndicator();
           } //switch end
-          return const Text('Bobala');
         }, //builder end
         
-      ),
-    );
+      );
   }
 }
