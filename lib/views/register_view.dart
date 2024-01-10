@@ -1,7 +1,7 @@
-
-
+import 'dart:developer' as devtools show log;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/constants/toutes.dart';
 
 
 class RegisterView extends StatefulWidget {
@@ -58,16 +58,16 @@ class _RegisterViewState extends State<RegisterView> {
                         final email = _email.text;
                         final password = _password.text;
                         try {
-                          final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-                          print(userCredential);
+                          final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password,);
+                          devtools.log(userCredential.toString());
                         } on FirebaseAuthException catch (e) {
-                          print(e.code);
+                          devtools.log(e.code.toString());
                           if (e.code == 'weak-password') {
-                            print('too easy');
+                            devtools.log('tooeasy');
                           } else if (e.code == 'email-already-in-use') {
-                            print('someone took it');
+                            devtools.log('taken');
                           } else if (e.code == 'invalid-email') {
-                            print('dont say it anymore');
+                            devtools.log('non valid email');
                           }
                         }                    
                       },
@@ -76,7 +76,7 @@ class _RegisterViewState extends State<RegisterView> {
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/login/',
+                          loginRoute,
                           (route) => false,
                         );
                       },
