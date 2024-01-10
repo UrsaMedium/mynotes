@@ -2,6 +2,7 @@ import 'dart:developer' as devtools show log;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/toutes.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 
 
 class LoginView extends StatefulWidget {
@@ -35,59 +36,62 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       appBar: AppBar(title: const Text('Login, motherfucker')),
       body: Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      autocorrect: false,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your email here',
-                      ),
-                    ),
-                    TextField(
-                      controller: _password,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your password here',
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () async {           
-                        final email = _email.text;
-                        final password = _password.text;
-                        try {
-                          final userCredential = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                              email: email,
-                              password: password
-                          );
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            loginRoute,
-                            (route) => false,
-                          );
-                          devtools.log(userCredential.toString());
-                        } on FirebaseAuthException catch (e) {
-                          devtools.log(e.code.toString());
-                          if (e.code == 'invalid-credential') {
-                            devtools.log(e.code.toString());
-                          }
-                        }
-                      },
-                      child: const Text('Login'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          registerRoute,
-                           (route) => false,
-                        );
-                      },
-                      child: const Text('Not registred yet? Register here!'),
-                    )
-                  ],
-                ),
+        children: [
+          TextField(
+            controller: _email,
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              hintText: 'Enter your email here',
+            ),
+          ),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(
+              hintText: 'Enter your password here',
+            ),
+          ),
+          TextButton(
+            onPressed: () async {      //when the LOGIN is pressed     
+              final email = _email.text;
+              final password = _password.text;
+              if (email == '' || password == '') {   
+                await showErrorDialog(context, 'You\'ve left an empty field');
+              } else {    //if fields are not empty
+                try {
+                  final userCredential = await FirebaseAuth.instance
+                    .signInWithEmailAndPassword(
+                      email: email,
+                      password: password
+                  );
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    notesRoute,
+                    (route) => false,
+                  );
+                } on FirebaseAuthException catch (e) {
+                  devtools.log(e.code.toString());
+                  await showErrorDialog(context, e.code.toString());
+                } catch (e) {
+                  await showErrorDialog(context, e.toString());
+                }
+              }              
+            },
+            child: const Text('Login'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                registerRoute,
+                  (route) => false,
+              );
+            },
+            child: const Text('Not registred yet? Register here!'),
+          )
+        ],
+      ),
     );
   }
 }
