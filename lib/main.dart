@@ -25,6 +25,7 @@ void main() {
         registerRoute: (context) => const RegisterView(),
         notesRoute:(context) => const NotesView(),
         mainRoute:(context) => const HomePage(),
+        verifyEmailRoute:(context) => const VerifyEmailView(),
       },
     ));
 }
