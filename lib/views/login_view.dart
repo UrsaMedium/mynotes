@@ -62,7 +62,7 @@ class _LoginViewState extends State<LoginView> {
                 await showErrorDialog(context, 'You\'ve left an empty field');
               } else {    //if fields are not empty
                 try {
-                  final userCredential = await FirebaseAuth.instance
+                  await FirebaseAuth.instance
                     .signInWithEmailAndPassword(
                       email: email,
                       password: password
