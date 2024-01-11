@@ -1,7 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
@@ -36,17 +34,15 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Firebase.initializeApp(
-                  options: DefaultFirebaseOptions.currentPlatform,
-                ),
+        future: AuthService.fireBase().initialize(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState){
 
             case ConnectionState.done:
-              final user = FirebaseAuth.instance.currentUser;
+              final user = AuthService.fireBase().currentUser;
               devtools.log(user.toString());
               if (user != null) {
-                if (user.emailVerified != false) {
+                if (user.isEmailVerified != false) {
                   devtools.log('verifyed');
                   return const NotesView();
                 } else {

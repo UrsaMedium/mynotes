@@ -1,7 +1,8 @@
 import 'dart:developer' as devtools show log;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/toutes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 
@@ -62,13 +63,9 @@ class _LoginViewState extends State<LoginView> {
                 await showErrorDialog(context, 'You\'ve left an empty field');
               } else {    //if fields are not empty
                 try {
-                  await FirebaseAuth.instance
-                    .signInWithEmailAndPassword(
-                      email: email,
-                      password: password
-                  );
-                  final user = FirebaseAuth.instance.currentUser;
-                  if (user?.emailVerified ?? false) {
+                  await AuthService.fireBase().logIn(email: email, password: password);
+                  final user = AuthService.fireBase().currentUser;
+                  if (user?.isEmailVerified ?? false) {
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       notesRoute,
                       (route) => false,
@@ -79,11 +76,12 @@ class _LoginViewState extends State<LoginView> {
                       (route) => false,
                     );
                   }                 
-                } on FirebaseAuthException catch (e) {
-                  devtools.log(e.code.toString());
-                  await showErrorDialog(context, e.code.toString());
-                } catch (e) {
-                  await showErrorDialog(context, e.toString());
+                } on UserNotFoundAuthException {
+                  await showErrorDialog(context, 'User not found');
+                } on WrongPasswordAuthException {
+                  await showErrorDialog(context, 'Wrong password');
+                } on GenericAuthException {
+                  await showErrorDialog(context, 'Authentication error');
                 }
               }              
             },

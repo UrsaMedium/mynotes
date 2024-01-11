@@ -1,7 +1,8 @@
 import 'dart:developer' as devtools show log;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/toutes.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 
 
@@ -62,14 +63,18 @@ class _RegisterViewState extends State<RegisterView> {
                           await showErrorDialog(context, 'You\'ve left an empty field');
                         } else {
                           try {
-                            await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password,);
-                            final user = FirebaseAuth.instance.currentUser;
-                            await user?.sendEmailVerification();
+                            await AuthService.fireBase().creatUser(email: email, password: password);
+                            await AuthService.fireBase().sendEmailVerification();
                             Navigator.of(context).pushNamed(verifyEmailRoute);
-                          } on FirebaseAuthException catch (e) {
-                            devtools.log(e.code.toString());
-                            await showErrorDialog(context, e.code.toString());
-                          } 
+                          } on WeakPasswordAuthException {
+                            await showErrorDialog(context, 'Weak password');
+                          } on EmailAlreadyInUseAuthException {
+                            await showErrorDialog(context, 'Email Aready in use');
+                          } on InvalidEmailAuthException {
+                            await showErrorDialog(context, 'Invalid email');
+                          } on GenericAuthException {
+                            await showErrorDialog(context, 'Faild to register');
+                          }
                         }                                           
                       },
                       child: const Text('Register'),
