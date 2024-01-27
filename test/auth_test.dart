@@ -101,7 +101,7 @@ bool get isInitialized => _isInitialized;
     if (!isInitialized) throw NotInitializedException();
     if (email =='foo@bar.com') throw UserNotFoundAuthException();
     if (password == 'foobar') throw WrongPasswordAuthException();
-    const user = AuthUser(isEmailVerified: false);
+    const user = AuthUser(email: 'Bush@voosh.ru', isEmailVerified: false);
     _user = user;
     return Future.value(user);
   }
@@ -119,7 +119,7 @@ bool get isInitialized => _isInitialized;
     if (!isInitialized) throw NotInitializedException();
     final user = _user;
     if (user == null) throw UserNotFoundAuthException();
-    const newUser = AuthUser(isEmailVerified: true);
+    const newUser = AuthUser(email: 'Bush@voosh.ru', isEmailVerified: true);
     _user = newUser;
   }
 
