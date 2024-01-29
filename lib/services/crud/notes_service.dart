@@ -15,10 +15,16 @@ class NotesService {
 
   // making the class a singleton
   static final NotesService _shared = NotesService._sharedInsctance();
-  NotesService._sharedInsctance();
+  NotesService._sharedInsctance() {
+    _notesStreamControler = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamControler.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
-  final _notesStreamControler = StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamControler;
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamControler.stream;
 
