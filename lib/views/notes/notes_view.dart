@@ -55,7 +55,7 @@ class _NotesViewState extends State<NotesView> {
                       loginRoute, 
                       (_) => false);
                   }
-                  break;
+                  break; 
               }
             },
             itemBuilder: (context) {
@@ -80,6 +80,7 @@ class _NotesViewState extends State<NotesView> {
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
+                    case ConnectionState.active:
                       return const Text('waiting for all notes...');                    
                     default:
                       return const CircularProgressIndicator();

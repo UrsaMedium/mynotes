@@ -29,8 +29,6 @@ class NotesService {
     } on CouldNotFindUser {
       final createdUser = await createUser(email: email);
       return createdUser;
-    } catch (e) {
-      rethrow;
     }
   }
 
@@ -143,7 +141,7 @@ class NotesService {
     final db = _getDatabaseOrThrow();
     final results = await db.query(userTable, limit: 1, where: 'email = ?', whereArgs: [email.toLowerCase()]);
     if (results.isEmpty) {
-      throw CouldNotFindUser;
+      throw CouldNotFindUser();
     } else {
     return DatabaseUser.fromRow(results.first);
     }
@@ -193,7 +191,7 @@ class NotesService {
     try {
       await open();
     } on DatabaseAlreadyOpenException {
-      // empty
+      print('db is opened');
     }
   }
 
