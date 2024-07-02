@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
-import 'package:mynotes/utilities/show_error_dialog.dart';
-
+import 'package:mynotes/utilities/dialog/error_dialog.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -13,7 +12,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -55,14 +53,17 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
           TextButton(
-            onPressed: () async {      //when the LOGIN is pressed     
+            onPressed: () async {
+              //when the LOGIN is pressed
               final email = _email.text;
               final password = _password.text;
-              if (email == '' || password == '') {   
+              if (email == '' || password == '') {
                 await showErrorDialog(context, 'You\'ve left an empty field');
-              } else {    //if fields are not empty
+              } else {
+                //if fields are not empty
                 try {
-                  await AuthService.fireBase().logIn(email: email, password: password);
+                  await AuthService.fireBase()
+                      .logIn(email: email, password: password);
                   final user = AuthService.fireBase().currentUser;
                   if (user?.isEmailVerified ?? false) {
                     Navigator.of(context).pushNamedAndRemoveUntil(
@@ -74,7 +75,7 @@ class _LoginViewState extends State<LoginView> {
                       verifyEmailRoute,
                       (route) => false,
                     );
-                  }                 
+                  }
                 } on UserNotFoundAuthException {
                   await showErrorDialog(context, 'User not found');
                 } on WrongPasswordAuthException {
@@ -82,7 +83,7 @@ class _LoginViewState extends State<LoginView> {
                 } on GenericAuthException {
                   await showErrorDialog(context, 'Authentication error');
                 }
-              }              
+              }
             },
             child: const Text('Login'),
           ),
@@ -90,7 +91,7 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () {
               Navigator.of(context).pushNamedAndRemoveUntil(
                 registerRoute,
-                  (route) => false,
+                (route) => false,
               );
             },
             child: const Text('Not registred yet? Register here!'),
