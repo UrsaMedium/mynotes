@@ -4,9 +4,8 @@ import 'dart:developer' as devtools show log;
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/crud/notes_service.dart';
-import 'package:mynotes/utilities/dialog/logout_dialog.dart';
-import 'package:mynotes/views/notes/notes_llist_view.dart';
-
+import 'package:mynotes/utilities/dialogs/logout_dialog.dart';
+import 'package:mynotes/views/notes/notes_list_view.dart';
 enum MenuAction { logout }
 
 class NotesView extends StatefulWidget {
@@ -73,8 +72,7 @@ class _NotesViewState extends State<NotesView> {
                           case ConnectionState.waiting:
                           case ConnectionState.active:
                             if (snapshot.hasData) {
-                              final allNotes =
-                                  snapshot.data as List<DatabaseNote>;
+                              final allNotes = snapshot.data as List<DatabaseNote>;
                               return NotesListView(
                                 notes: allNotes,
                                 onDeleteNote: (note) async {

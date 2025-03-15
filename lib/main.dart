@@ -25,7 +25,7 @@ void main() {
         notesRoute:(context) => const NotesView(),
         mainRoute:(context) => const HomePage(),
         verifyEmailRoute:(context) => const VerifyEmailView(),
-        newNoteRoute:(context) => new NewNoteView(),
+        newNoteRoute:(context) => const NewNoteView(),
       },
     ));
 }
@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
                 }
               } else {
                 devtools.log('register');
-                return LoginView();
+                return const LoginView();
               }
               // return const LoginView();
             default:
