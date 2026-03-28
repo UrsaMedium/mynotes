@@ -51,8 +51,8 @@ class _NotesViewState extends State<NotesView> {
                     devtools.log(shouldLogout.toString());
                     if (shouldLogout) {
                       context.read<AuthBloc>().add(
-                        const AuthEventLogOut(),
-                      );
+                            const AuthEventLogOut(),
+                          );
                     }
                     break;
                 }
