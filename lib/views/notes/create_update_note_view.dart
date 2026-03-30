@@ -14,13 +14,11 @@ class CreateUpdateNoteView extends StatefulWidget {
 }
 
 class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
-
   CloudNote? _note;
   late final FirebaseCloudStorage _notesService;
   late final TextEditingController _textController;
 
   Future<CloudNote> createOrGetExistingNote(BuildContext context) async {
-
     final widgetNote = context.getArgument<CloudNote>();
 
     if (widgetNote != null) {
@@ -73,14 +71,11 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
     super.initState();
   }
 
-  void _textControllerListener () async {
+  void _textControllerListener() async {
     final note = _note;
     if (note == null) return;
     final text = _textController.text;
-    await _notesService.updateNote(
-      documentId: note.documentId, 
-      text: text
-    );
+    await _notesService.updateNote(documentId: note.documentId, text: text);
   }
 
   void _setupTextControllerListener() {
@@ -91,39 +86,35 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('New Note'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final text = _textController.text;
-              if (_note == null || text.isEmpty) {
-                await showCannotShareEmptyNoteDialog(context);
-              } else {
-                Share.share(text);
-              }
-            },
-            icon: const Icon(Icons.share),
-          )
-        ]
-      ),
+      appBar: AppBar(title: const Text('New Note'), actions: [
+        IconButton(
+          onPressed: () async {
+            final text = _textController.text;
+            if (_note == null || text.isEmpty) {
+              await showCannotShareEmptyNoteDialog(context);
+            } else {
+              SharePlus.instance.share(ShareParams(text: text));
+            }
+          },
+          icon: const Icon(Icons.share),
+        )
+      ]),
       body: FutureBuilder(
         future: createOrGetExistingNote(context),
-        builder:(context, snapshot) {
-          switch (snapshot.connectionState){        
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
             case ConnectionState.done:
               _setupTextControllerListener();
               return TextField(
                 controller: _textController,
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
-                decoration: const InputDecoration(
-                  hintText: 'Start tyoing here'
-                ),
+                decoration:
+                    const InputDecoration(hintText: 'Start tyoing here'),
               );
-            default: 
+            default:
               return const CircularProgressIndicator();
-          }  
+          }
         },
       ),
     );

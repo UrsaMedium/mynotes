@@ -3,85 +3,77 @@ import 'package:mynotes/services/auth/auth_provider.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
 import 'package:test/test.dart';
 
-void main () {
+void main() {
   group('Mock Authentification', () {
     final provider = MockAuthProvider();
-    
+
+    test('Should not be initialized to begin with', () {
+      expect(provider.isInitialized, false);
+    });
+
+    test('Cannot log out if not initialized', () {
+      expect(provider.logOut(),
+          throwsA(const TypeMatcher<NotInitializedException>()));
+    });
+
+    test('Should be able to be initialized', () async {
+      await provider.initialize();
+      expect(provider.isInitialized, true);
+    });
+
+    test('User should be null after initialization', () {
+      expect(provider.currentUser, null);
+    });
+
     test(
-      'Should not be initialized to begin with', () {
-        expect(provider.isInitialized, false);
-      }
-    );
-    
-    test(
-      'Cannot log out if not initialized', () {
-        expect(provider.logOut(), throwsA(const TypeMatcher<NotInitializedException>()));
-      }
-    );
-    
-    test(
-      'Should be able to be initialized', () async {
+      'Should be able to initialize in less than 2 seconds',
+      () async {
         await provider.initialize();
-        expect(provider.isInitialized, true);
-      }
-    );
-
-    test(
-      'User should be null after initialization', () {
-        expect(provider.currentUser, null);
-      }
-    );
-
-    test(
-      'Should be able to initialize in less than 2 seconds', () async {
-        await provider. initialize();
         expect(provider.isInitialized, true);
       },
       timeout: const Timeout(Duration(seconds: 2)),
     );
 
-    test(
-      'Create user should delegate to login function', () async {
-        final badEmailUser = provider.creatUser(email: 'foo@bar.com', password: 'anypassword');
-        expect(badEmailUser, throwsA(const TypeMatcher<UserNotFoundAuthException>()));
-        final badPasswordUser = provider.creatUser(email: 'someone@bar.com', password: 'foobar');
-        expect(badPasswordUser, throwsA(const TypeMatcher<WrongPasswordAuthException>()));
-        final user = await provider.creatUser(email: 'foo', password: 'bar');
-        expect(provider.currentUser, user);
-        expect(user.isEmailVerified, false);
-      }
-    );
+    test('Create user should delegate to login function', () async {
+      final badEmailUser =
+          provider.creatUser(email: 'foo@bar.com', password: 'anypassword');
+      expect(badEmailUser,
+          throwsA(const TypeMatcher<UserNotFoundAuthException>()));
+      final badPasswordUser =
+          provider.creatUser(email: 'someone@bar.com', password: 'foobar');
+      expect(badPasswordUser,
+          throwsA(const TypeMatcher<WrongPasswordAuthException>()));
+      final user = await provider.creatUser(email: 'foo', password: 'bar');
+      expect(provider.currentUser, user);
+      expect(user.isEmailVerified, false);
+    });
 
-    test(
-      'Loged in user should be able to get verifyed', () {
-        provider.sendEmailVerification();
-        final user = provider.currentUser;
-        expect(user, isNotNull);
-        expect(user!.isEmailVerified, true);
-      }
-    );
+    test('Loged in user should be able to get verifyed', () {
+      provider.sendEmailVerification();
+      final user = provider.currentUser;
+      expect(user, isNotNull);
+      expect(user!.isEmailVerified, true);
+    });
 
-    test(
-      'SHould be able to log out and log in again', () async {
-        await provider.logOut();
-        await provider.logIn(email: 'user', password: 'password');
-        final user = provider.currentUser;
-        expect(user, isNotNull);
-      }
-    );
-
+    test('SHould be able to log out and log in again', () async {
+      await provider.logOut();
+      await provider.logIn(email: 'user', password: 'password');
+      final user = provider.currentUser;
+      expect(user, isNotNull);
+    });
   });
 }
 
 class NotInitializedException implements Exception {}
 
 class MockAuthProvider implements AuthProvider {
-AuthUser? _user;
-var _isInitialized = false;
-bool get isInitialized => _isInitialized;
+  AuthUser? _user;
+  var _isInitialized = false;
+  bool get isInitialized => _isInitialized;
 
   @override
-  Future<AuthUser> creatUser({required String email, required String password}) async {
+  Future<AuthUser> creatUser(
+      {required String email, required String password}) async {
     if (!isInitialized) throw NotInitializedException();
     await Future.delayed((const Duration(seconds: 1)));
     return logIn(email: email, password: password);
@@ -99,9 +91,10 @@ bool get isInitialized => _isInitialized;
   @override
   Future<AuthUser> logIn({required String email, required String password}) {
     if (!isInitialized) throw NotInitializedException();
-    if (email =='foo@bar.com') throw UserNotFoundAuthException();
+    if (email == 'foo@bar.com') throw UserNotFoundAuthException();
     if (password == 'foobar') throw WrongPasswordAuthException();
-    const user = AuthUser(id: 'my_id',email: 'Bush@voosh.ru', isEmailVerified: false);
+    const user =
+        AuthUser(id: 'my_id', email: 'Bush@voosh.ru', isEmailVerified: false);
     _user = user;
     return Future.value(user);
   }
@@ -119,8 +112,13 @@ bool get isInitialized => _isInitialized;
     if (!isInitialized) throw NotInitializedException();
     final user = _user;
     if (user == null) throw UserNotFoundAuthException();
-    const newUser = AuthUser(id: 'my_id', email: 'Bush@voosh.ru', isEmailVerified: true);
+    const newUser =
+        AuthUser(id: 'my_id', email: 'Bush@voosh.ru', isEmailVerified: true);
     _user = newUser;
   }
 
+  @override
+  Future<void> sendPasswordReset({required String toEmail}) {
+    throw UnimplementedError();
+  }
 }

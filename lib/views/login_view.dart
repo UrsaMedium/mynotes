@@ -47,56 +47,69 @@ class _LoginViewState extends State<LoginView> {
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Login, motherfucker')),
-        body: Column(
-          children: [
-            TextField(
-              controller: _email,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                hintText: 'Enter your email here',
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const Text(
+                  'Here is were you input your credentials in order to login, you know'),
+              TextField(
+                controller: _email,
+                autocorrect: false,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your email here',
+                ),
               ),
-            ),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                hintText: 'Enter your password here',
+              TextField(
+                controller: _password,
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your password here',
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () async {
-                //when the LOGIN is pressed
-                final email = _email.text;
-                final password = _password.text;
-                try {
+              TextButton(
+                onPressed: () async {
+                  //when the LOGIN is pressed
+                  final email = _email.text;
+                  final password = _password.text;
+                  try {
+                    context.read<AuthBloc>().add(
+                          AuthEventLogIn(
+                            email,
+                            password,
+                          ),
+                        );
+                  } on UserNotFoundAuthException {
+                    await showErrorDialog(context, 'User not found');
+                  } on WrongPasswordAuthException {
+                    await showErrorDialog(context, 'Wrong password');
+                  } on GenericAuthException {
+                    await showErrorDialog(context, 'Authentication error');
+                  }
+                },
+                child: const Text('Login'),
+              ),
+              TextButton(
+                onPressed: () {
                   context.read<AuthBloc>().add(
-                        AuthEventLogIn(
-                          email,
-                          password,
-                        ),
+                        const AuthEventForgotPassword(),
                       );
-                } on UserNotFoundAuthException {
-                  await showErrorDialog(context, 'User not found');
-                } on WrongPasswordAuthException {
-                  await showErrorDialog(context, 'Wrong password');
-                } on GenericAuthException {
-                  await showErrorDialog(context, 'Authentication error');
-                }
-              },
-              child: const Text('Login'),
-            ),
-            TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(
-                      const AuthEventShouldRegister(),
-                    );
-              },
-              child: const Text('Not registred yet? Register here!'),
-            )
-          ],
+                },
+                child: const Text('I forgot my password'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                        const AuthEventShouldRegister(),
+                      );
+                },
+                child: const Text('Not registred yet? Register here!'),
+              ),
+            ],
+          ),
         ),
       ),
     );
